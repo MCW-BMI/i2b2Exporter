@@ -333,6 +333,20 @@ sqlLiteCon.execute("commit;")
 # INSERT INTO job (pset, label, concepts, name) VALUES (?, ?, ?, ?)
 # (64969, u'Breast Cancer 20150105 [1-5-2015] [tmcmahon] [PATIENTSET_64969]', '{"keys": [...], "names": [...]}', , u'heron-64969')
 # close , we're done adding data
+logger.warning("Updating Job table with results ... "  )
+
+sqlLiteCon.execute("""INSERT
+INTO
+    job
+    (
+        pset,
+        label,
+        concepts,
+        name
+    )
+    VALUES
+    ( ?, ?, '', '' );""", ( qtQueryMasterId , queryName))
+
 logger.warning('Creating Indexes in sqlite  file ...')
 db.executeScriptsFromFile("sql/defaultI2b2Indexes.sql", sqlLiteCon)
 sqlLiteCon.close()
