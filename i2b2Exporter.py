@@ -3,7 +3,8 @@
 #  Program to extract a query from I2b2 and generate a sqllite file output of the data
 #  See : https://www.i2b2.org/software/files/PDF/current/CRC_Plugin_Analysis.pdf
 #
-#  by George Kowalski of CTSI
+#  by George Kowalski of the Medical College of Wisconsin CTSI
+
 #
 
 import cx_Oracle
@@ -347,7 +348,7 @@ INTO
     VALUES
     ( ?, ?, '', '' );""", ( qtQueryMasterId , queryName))
 
-logger.warning('Creating Indexes in sqlite  file ...')
+logger.warning('Creating Indexes in the sqlite database ...')
 db.executeScriptsFromFile("sql/defaultI2b2Indexes.sql", sqlLiteCon)
 sqlLiteCon.close()
 
