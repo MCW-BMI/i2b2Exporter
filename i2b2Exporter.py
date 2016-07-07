@@ -6,7 +6,6 @@
 #  by George Kowalski of CTSI
 #
 
-
 import cx_Oracle
 import json
 import sys
@@ -86,12 +85,19 @@ if ( os.path.isfile(sqlliteFileName)) :
     #  Add confirmation here
     os.remove (sqlliteFileName)
 sqlLiteCon = sqllite.connect(sqlliteFileName);
+#  The need for Speed
+sqlLiteCon.execute("PRAGMA synchronous=OFF")
+sqlLiteCon.execute("PRAGMA journal_mode=OFF")
+
 db.executeScriptsFromFile("sql/defaultI2b2Schema.sql", sqlLiteCon)
 
+
+sqlLiteCon.isolation_level = None
 
 
 # load patient data
 logger.warning("Saving existing Patient Records  ... "  )
+sqlLiteCon.execute("begin;")
 for patNum in patNumArray  :
     cur.execute("select  * from patient_dimension where  PATIENT_NUM = :patNum" , patNum= patNum    )
     results = cur.fetchall()
@@ -140,7 +146,9 @@ for patNum in patNumArray  :
             )  """
 
         sqlLiteCon.execute(sqlInsert,  row )
-sqlLiteCon.commit()
+
+sqlLiteCon.execute("commit;")
+
 
 # load Visit Dimension data
 logger.warning("Saving existing Visit Records  ... "  )
@@ -150,6 +158,8 @@ select  DISTINCT( PATIENT_NUM  ) from   QT_PATIENT_SET_COLLECTION WHERE RESULT_I
 ) """, qtresultInstanceId = qtresultInstanceId )
 
 results = cur.fetchall()
+sqlLiteCon.execute("begin;")
+
 for row in results:
     sqlInsert = """
                   INSERT
@@ -194,8 +204,62 @@ for row in results:
 
     sqlLiteCon.execute(sqlInsert,  row )
 
-sqlLiteCon.commit()
+sqlLiteCon.execute("commit;")
+
+# Load Concept_dimension
+logger.warning("Saving existing Concepts Records  ... "  )
+
+cur.execute("""
+  select * from  CONCEPT_DIMENSION where concept_cd in (
+        select  distinct ( concept_cd )   from observation_fact where patient_num in (
+                select  DISTINCT( PATIENT_NUM  ) from   QT_PATIENT_SET_COLLECTION WHERE RESULT_INSTANCE_ID = :qtresultInstanceId
+        )
+) order by concept_cd
+  """, qtresultInstanceId = qtresultInstanceId )
+
+results = cur.fetchall()
+
+sqlLiteCon.execute("begin;")
+
+for row in results:
+    sqlInsert = """
+             INSERT
+        INTO
+            concept_dimension
+            (
+                concept_path,
+                concept_cd,
+                name_char,
+                concept_blob,
+                update_date,
+                download_date,
+                import_date,
+                sourcesystem_cd,
+                upload_id
+            )
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+                """
+
+    sqlLiteCon.execute(sqlInsert,  row )
+
+sqlLiteCon.execute("commit;")
+
+
+
+
 # load observation fact data
+
 logger.warning("Saving existing Observation Fact Records  ... "  )
 
 cur.execute("""select * from observation_fact where patient_num in (
@@ -203,6 +267,7 @@ cur.execute("""select * from observation_fact where patient_num in (
 )  """, qtresultInstanceId = qtresultInstanceId )
 
 results = cur.fetchall()
+sqlLiteCon.execute("begin;")
 for row in results:
     sqlInsert = """
                INSERT INTO
@@ -260,8 +325,10 @@ for row in results:
 
     sqlLiteCon.execute(sqlInsert,  row )
 
+sqlLiteCon.execute("commit;")
+
+
 # close , we're done adding data
-sqlLiteCon.commit()
 sqlLiteCon.close()
 
 
