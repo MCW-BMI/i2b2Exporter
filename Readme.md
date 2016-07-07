@@ -5,11 +5,11 @@ Tool to export an [I2B2](https://i2b2.org/) query into a sqllite file
 
 # Installation and Configuration 
 
-This script was written to run with Python 3 
+This script was written to run with Python 3 and was tested only to pull data from Oracle at this time. 
 
 ## Set up environment 
 
-- configure the database connection parameters by copying `config/config_example.json` to `config/config.json` and editting as appropriate
+- configure the database connection parameters by copying `config/config_example.json` to `config/config.json` and edit   as appropriate to talk to your I2B2 schema ( DEMODATA in the default VM provided by I2B2 folks ) 
 - Set up the local virtual Environment with : 
 
 

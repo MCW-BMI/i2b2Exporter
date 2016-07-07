@@ -91,7 +91,7 @@ db.executeScriptsFromFile("sql/defaultI2b2Schema.sql", sqlLiteCon)
 
 
 # load patient data
-logger.warning("Saving  existing patient Records  ... "  )
+logger.warning("Saving existing Patient Records  ... "  )
 for patNum in patNumArray  :
     cur.execute("select  * from patient_dimension where  PATIENT_NUM = :patNum" , patNum= patNum    )
     results = cur.fetchall()
@@ -140,6 +140,7 @@ for patNum in patNumArray  :
             )  """
 
         sqlLiteCon.execute(sqlInsert,  row )
+sqlLiteCon.commit()
 
 # load Visit Dimension data
 logger.warning("Saving existing Visit Records  ... "  )
@@ -193,7 +194,71 @@ for row in results:
 
     sqlLiteCon.execute(sqlInsert,  row )
 
+sqlLiteCon.commit()
 # load observation fact data
+logger.warning("Saving existing Observation Fact Records  ... "  )
+
+cur.execute("""select * from observation_fact where patient_num in (
+        select  DISTINCT( PATIENT_NUM  ) from   QT_PATIENT_SET_COLLECTION WHERE RESULT_INSTANCE_ID = :qtresultInstanceId
+)  """, qtresultInstanceId = qtresultInstanceId )
+
+results = cur.fetchall()
+for row in results:
+    sqlInsert = """
+               INSERT INTO
+    observation_fact
+    (
+        encounter_num,
+        patient_num,
+        concept_cd,
+        provider_id,
+        start_date,
+        modifier_cd,
+        instance_num,
+        valtype_cd,
+        tval_char,
+        nval_num,
+        valueflag_cd,
+        quantity_num,
+        units_cd,
+        end_date,
+        location_cd,
+        observation_blob,
+        confidence_num,
+        update_date,
+        download_date,
+        import_date,
+        sourcesystem_cd,
+        upload_id
+    )
+    VALUES
+    (
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?
+    );
+                """
+
+    sqlLiteCon.execute(sqlInsert,  row )
 
 # close , we're done adding data
 sqlLiteCon.commit()

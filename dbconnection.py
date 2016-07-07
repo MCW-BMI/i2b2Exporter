@@ -33,10 +33,11 @@ def executeScriptsFromFile(filename, conn):
 
     # all SQL commands (split on ';')
     sqlCommands = sqlFile.split(';')
+    logger.warning('Setting up sqllite file ...' )
 
     # Execute every command from the input file
     for command in sqlCommands:
-        logger.warning('Setting up sqllite file : %s', command, extra=d)
+        # logger.warning('Setting up sqllite file : %s', command, extra=d)
         # This will skip and report errors
         # For example, if the tables do not yet exist, this will skip over
         # the DROP TABLE commands
