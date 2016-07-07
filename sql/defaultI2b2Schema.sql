@@ -104,21 +104,3 @@ CREATE TABLE visit_dimension (
 	upload_id NUMERIC(38, 0),
 	PRIMARY KEY (encounter_num, patient_num)
 );
-
-CREATE INDEX ix_concept_dimension_upload_id ON concept_dimension (upload_id);
-CREATE INDEX ix_modifier_dimension_upload_id ON modifier_dimension (upload_id);
-CREATE INDEX ix_observation_fact_concept_cd ON observation_fact (concept_cd);
-CREATE INDEX ix_observation_fact_encounter_num ON observation_fact (encounter_num);
-CREATE INDEX ix_observation_fact_modifier_cd ON observation_fact (modifier_cd);
-CREATE INDEX ix_observation_fact_nval_num ON observation_fact (nval_num);
-CREATE INDEX ix_observation_fact_patient_num ON observation_fact (patient_num);
-CREATE INDEX ix_observation_fact_tval_char ON observation_fact (tval_char);
-CREATE INDEX ix_observation_fact_valtype_cd ON observation_fact (valtype_cd);
-CREATE INDEX ix_patient_dimension_upload_id ON patient_dimension (upload_id);
-CREATE INDEX ix_visit_dimension_upload_id ON visit_dimension (upload_id);
-CREATE INDEX observation_fact_pk ON observation_fact (encounter_num, concept_cd, provider_id, start_date, modifier_cd, instance_num);
-CREATE INDEX pd_idx_allpatientdim ON patient_dimension (patient_num, vital_status_cd, birth_date, death_date, sex_cd, age_in_years_num, language_cd, race_cd, marital_status_cd, religion_cd, zip_cd, income_cd);
-CREATE INDEX pd_idx_dates ON patient_dimension (patient_num, vital_status_cd, birth_date, death_date);
-CREATE INDEX pd_idx_statecityzip ON patient_dimension (statecityzip_path, patient_num);
-CREATE INDEX visitdim_en_pn_lp_io_sd_idx ON visit_dimension (encounter_num, patient_num, location_path, inout_cd, start_date, end_date, length_of_stay);
-CREATE INDEX visitdim_std_edd_idx ON visit_dimension (start_date, end_date);

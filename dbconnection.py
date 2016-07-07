@@ -33,7 +33,7 @@ def executeScriptsFromFile(filename, conn):
 
     # all SQL commands (split on ';')
     sqlCommands = sqlFile.split(';')
-    logger.warning('Setting up sqllite file ...' )
+
 
     # Execute every command from the input file
     for command in sqlCommands:

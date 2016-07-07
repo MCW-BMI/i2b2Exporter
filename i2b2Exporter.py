@@ -89,6 +89,7 @@ sqlLiteCon = sqllite.connect(sqlliteFileName);
 sqlLiteCon.execute("PRAGMA synchronous=OFF")
 sqlLiteCon.execute("PRAGMA journal_mode=OFF")
 
+logger.warning('Creating sqlite schema  ...')
 db.executeScriptsFromFile("sql/defaultI2b2Schema.sql", sqlLiteCon)
 
 
@@ -327,8 +328,13 @@ for row in results:
 
 sqlLiteCon.execute("commit;")
 
+# Save Job information in the file
 
+# INSERT INTO job (pset, label, concepts, name) VALUES (?, ?, ?, ?)
+# (64969, u'Breast Cancer 20150105 [1-5-2015] [tmcmahon] [PATIENTSET_64969]', '{"keys": [...], "names": [...]}', , u'heron-64969')
 # close , we're done adding data
+logger.warning('Creating Indexes in sqlite  file ...')
+db.executeScriptsFromFile("sql/defaultI2b2Indexes.sql", sqlLiteCon)
 sqlLiteCon.close()
 
 
