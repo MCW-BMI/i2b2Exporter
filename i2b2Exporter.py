@@ -329,6 +329,23 @@ for row in results:
 
 sqlLiteCon.execute("commit;")
 
+# Modifier Dimension, just grab them all as we don't know which are important at this time.
+
+
+
+logger.warning("Saving existing Modifiers Records  ... "  )
+
+cur.execute("""SELECT md.modifier_path, md.modifier_cd, md.name_char  FROM modifier_dimension md ORDER BY modifier_path  """ )
+
+results = cur.fetchall()
+sqlLiteCon.execute("begin;")
+for row in results:
+    sqlInsert = """  INSERT INTO modifier_dimension (modifier_path, modifier_cd, name_char) VALUES (?, ?, ?)   """
+    sqlLiteCon.execute(sqlInsert,  row )
+
+sqlLiteCon.execute("commit;")
+
+
 # Save Job information in the file
 
 # INSERT INTO job (pset, label, concepts, name) VALUES (?, ?, ?, ?)
